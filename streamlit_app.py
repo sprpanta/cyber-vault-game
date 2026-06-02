@@ -314,12 +314,12 @@ def get_current_term_info():
     return None, None
 
 @st.cache_data
-def generate_options(_card_title, term_idx, _questions_list):
-    """Cache options generation for speed"""
+def generate_options(card_title, term_idx, term_text, questions_list):
+    """Cache options generation for speed - FIXED: uses card_title to find correct card"""
     # Find the card by title
     card = None
-    for q in _questions_list:
-        if q['title'] == _card_title:
+    for q in questions_list:
+        if q['title'] == card_title:
             card = q
             break
     
@@ -334,10 +334,10 @@ def generate_options(_card_title, term_idx, _questions_list):
         if idx != term_idx and definition not in distractors:
             distractors.append(definition)
     
-    # Add more distractors if needed
+    # Add more distractors if needed from other cards
     if len(distractors) < 3:
-        for q in _questions_list:
-            for definition in q['definitions']:
+        for q in questions_list:
+            for idx, definition in enumerate(q['definitions']):
                 if definition not in distractors and definition != correct_answer:
                     distractors.append(definition)
                     if len(distractors) >= 3:
@@ -345,7 +345,9 @@ def generate_options(_card_title, term_idx, _questions_list):
             if len(distractors) >= 3:
                 break
     
-    options = [correct_answer] + distractors[:3]
+    # Ensure we have exactly 3 distractors (or fewer if not enough)
+    distractors = distractors[:3]
+    options = [correct_answer] + distractors
     random.shuffle(options)
     
     return options, correct_answer
@@ -662,10 +664,11 @@ elif st.session_state.game_active:
         </div>
         """, unsafe_allow_html=True)
         
-        # Generate options
+        # Generate options - FIXED: pass correct parameters
         options, correct_answer = generate_options(
             current_card['title'], 
             st.session_state.current_term_idx,
+            st.session_state.current_term,
             st.session_state.questions_list
         )
         
