@@ -1,0 +1,19 @@
+[server]
+# Security configurations
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 1
+enableWebsocketCompression = true
+
+# Headers for security
+[browser]
+serverAddress = "localhost"
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#ffd700"
+backgroundColor = "#0a0a0f"
+secondaryBackgroundColor = "#1a1a2e"
+textColor = "#e0e0ff"
+font = "monospace"
